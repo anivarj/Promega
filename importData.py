@@ -44,22 +44,33 @@ def importMetaData(file):
     readout = np_metadata[5,0]  #location of readout (BRET or Luminesence)
     emissionFilter = np_metadata[6,3] #location of emission filter info
 
-    if readout == "BRET":                   #if the readout is BRET, get the location of acceptor filter info and integration time
+    if protocol == "Protocol: BRET: NanoBRET 618":  #if the readout is BRET, get the location of acceptor filter info and integration time
+        fileType = 'BRET'
         acceptorFilter = np_metadata[7,3]
         integrationTime = np_metadata[8,3]
-    else:                                   #if the readout is luminescence, just get the integration time (no acceptor listed)
+    elif protocol == "Protocol: Nano-Glo":          #if the readout is luminescence, just get the integration time (no acceptor listed)
+        fileType = 'Luminescence'
         integrationTime = np_metadata[7,3]
+    else:
+        print("The protocol type for ", file, " isn't recognized! Exiting script.")
+    
 
     #create a list of title:value pairs from the metadata
     metadata = [["Protocol", protocol], ["Plate Name",plateName], ["Readout" ,  readout], ["Emission Filter" ,   emissionFilter], ["Integration Time" ,    integrationTime]]
 
     newDf = pd.DataFrame(metadata, columns = ["Category", "Value"]) #append the pairs to a dataframe
-    return(np_metadata, newDf) #return the dataframe and original metadata array (can probably eliminate np_metadata once comfortable with script functionability)
+    return(np_metadata, newDf, fileType) #return the dataframe and original metadata array (can probably eliminate np_metadata once comfortable with script functionability)
 
 #for a given xlsx file, finds the corresponding .csv and imports raw data
-def importCSV(file):
+def importCSV(file, fileType):
     csvFile = file.rsplit(".",1)[0] + ".csv"                                                        #take original file name and replace suffix with .csv
-    csvDf = pd.read_csv(csvFile, usecols=['WellPosition', 'Donor_RLU', 'Acceptor_RLU', 'Ratio'])    #read the csv file and extract the relevant columns
+    
+    if fileType == 'Luminescence':
+        csvDf = pd.read_csv(csvFile, usecols=['WellPosition', 'RLU']) 
+    
+    else:
+        csvDf = pd.read_csv(csvFile, usecols=['WellPosition', 'Donor_RLU', 'Acceptor_RLU', 'Ratio'])    #read the csv file and extract the relevant columns
+    
     csvDf[['Row', 'Column']] = csvDf['WellPosition'].str.split(':', expand=True)                    #split the WellPosition column into two parts
     csvDf['Column'] = csvDf['Column'].str.pad(width=2, side='left', fillchar= "0")                  #pad the well column numbers with 0s (01, 02...)
     return(csvDf) #returns a dataframe with extracted data for all donor, acceptor and ratios
@@ -73,11 +84,13 @@ def extract_data(csvDf, signal):
     return(dfSorted) #returns the shuffled data
 
 
+'''
 ###### MAIN FUNCTIONS BELOW #######
-###################################
+'''
 
 # Choose your raw data location
 targetWorkspace = askdirectory(title="SELECT YOUR DATA LOCATION")
+#targetWorkspace = r"D:\test-data\mixed" #for quick testing
 concatFile = os.path.join(targetWorkspace, 'data-concat.csv') #location of the final concatenated file
 
 if os.path.exists(concatFile): #if the concat file already exists, delete it.
@@ -88,14 +101,21 @@ paths = get_files(targetWorkspace) #list of path output from get_files
 
 #for each xlsx file in the paths list, do the following:
 for file in paths:
-    xlsxFile, metaData = importMetaData(file)   #import metadata into pandas dataframe
-    csvDf= importCSV(file)                      #load the csv file columns into a dataframe
-
-    donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
-    acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
-    ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
-    list_of_dfs = [donor, acceptor, ratio]          #list of dataframes to concatenate
+    xlsxFile, metaData, fileType = importMetaData(file)   #import metadata into pandas dataframe
+  
+    csvDf= importCSV(file, fileType)                      #load the csv file columns into a dataframe
     
+    
+    if fileType == 'BRET':
+        donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
+        acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
+        ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
+        list_of_dfs = [donor, acceptor, ratio]          #list of dataframes to concatenate
+    
+    else:
+        donor = extract_data(csvDf, 'RLU')        #extract and re-shuffle the donor data
+        list_of_dfs = [donor] #just concatenate donor
+        
     #write the donor, accepetor and ratio to an excel file
     with open(concatFile,'a') as f:
         metaData.to_csv(f, index=False, header=False, line_terminator='\n')
