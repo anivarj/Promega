@@ -36,7 +36,7 @@ Open the ZIP file and move the folder to wherever you want on your computer (min
 2.  Open the location of the scripts folder and select the script you want to run (should end with `.py`).
 3.  In the top right-hand corner of the window, click on the Play button to run the script.
 
-[IMAGE OF BUTTON]
+![VSCode Run Button](https://github.com/anivarj/Promega/blob/main/VSCode-Run.png?raw=true)
 
 4.	In the pop-up window, navigate to where your data is stored and click `select folder`.
 5.	The script will now automatically run. Any errors or messages will pop up in the terminal at the bottom of the VSCode window.
