@@ -54,7 +54,7 @@ Open the ZIP file and move the folder to wherever you want on your computer (min
 If you find a bug or run into problems, let me know! Things that work on my machine may not necessarily operate the same for you, so it's helpful for me to know when things aren't working right. 
 
 
-**I really hate < specific feature> / I really wish you had <specific feature>**
+**I really hate < specific feature> / I really wish you had < specific feature >**
 
 If there’s a feature you hate or wish to see, also let me know! I'm by no means an expert, but I enjoy learning and trying new things!
 
