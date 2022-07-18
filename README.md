@@ -17,9 +17,15 @@ I've written a short tutorial document on how to get set up, but please note tha
 2.	Navigate to `File -> Preferences -> Settings` 
 3.	In the preferences, search for `“Terminal Integrated Default Profile: Windows”`
 4.	Select `“Command Prompt”`. This tells the program which shell to use when running scripts.
+
+![VSCode Terminal](https://github.com/anivarj/Promega/blob/main/VSCode-terminal.png)
+
 5.	Navigate to `View -> Command Palette`. 
 6.	Search for `“Python Select Interpreter”`.
 7.	Choose the Python version that has `('base')` next to it (it should be `Python 3.9.XX`). This tells the program where your python lives so it can call it to run things.
+
+![VSCode Interpreter](https://github.com/anivarj/Promega/blob/main/VSCode-interpreter.png)
+
 
 ## Download my scripts ##
 You have two major options for accessing my materials. 
