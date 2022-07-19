@@ -35,9 +35,9 @@ I've written a short tutorial document on how to get set up, but please note tha
 ## Download my scripts ##
 You have two major options for accessing my materials. 
 1.  You can download a static "copy" file to your local computer
-2.  You can clone and sync the entire repository to your computer (this way, any changes I make will be pushed to you).
+2.  You can clone and sync the entire repository to your computer using GitHub Desktop (this way, any changes I make will be pushed to you).
 
-First-time users or those who don't need the latest and greatest will likely be fine just downloading a static copy, however if you would like help cloning and linking the repository, let me know and I'd be happy to help :)  
+First-time users or those who don't need the latest and greatest will likely be fine just downloading a static copy, however if you would like to stay up-to-date, let me know if you'd like help setting things up with GitHub Desktop (link above)! :)  
 
 To download a static copy, click on the green "Code" button and download the ZIP file.
 Open the ZIP file and move the folder to wherever you want on your computer (mine are in `Documents`).
