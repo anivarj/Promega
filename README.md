@@ -14,11 +14,14 @@ I've written a short tutorial document on how to get set up, but please note tha
 
 ## Set up VSCode (first time only) ##
 1.	Open the program.
-2. Navigate to **Extensions** (the four block icon on the left-hand side of the window)
-3. Search for and install the "Python" package 
-4.	Navigate to `File -> Preferences -> Settings` 
-5.	In the preferences, search for `“Terminal Integrated Default Profile: Windows”`
-6.	Select `“Command Prompt”`. This tells the program which shell to use when running scripts.
+2. Navigate to `Extensions` (the four block icon on the left-hand side of the window)
+3. Search for and install the `Python` package 
+
+![VSCode Terminal](https://github.com/anivarj/Promega/blob/main/extensions.png)
+
+5.	Navigate to `File -> Preferences -> Settings` 
+6.	In the preferences, search for `“Terminal Integrated Default Profile: Windows”`
+7.	Select `“Command Prompt”`. This tells the program which shell to use when running scripts.
 
 ![VSCode Terminal](https://github.com/anivarj/Promega/blob/main/VSCode-terminal.png)
 
