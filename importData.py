@@ -114,8 +114,8 @@ for file in paths:
     
     
     if fileType == 'BRET':
-        donor = extract_data(csvDf, 'Donor RLU')        #extract and re-shuffle the donor data
-        acceptor = extract_data(csvDf, 'Acceptor RLU')  #extract and re-shuffle the acceptor data
+        donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
+        acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
         ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
         list_of_dfs = [ratio, donor, acceptor]          #list of dataframes to concatenate
         
