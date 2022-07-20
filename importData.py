@@ -13,6 +13,7 @@ DEPENDENCIES:
 
 #import packages needed
 from genericpath import exists
+from logging import raiseExceptions
 from operator import index
 import pandas as pd
 import numpy as np
@@ -51,8 +52,7 @@ def importMetaData(file):
         fileType = 'Luminescence'
         integrationTime = np_metadata[7,3]
     else:
-        print("The protocol type for ", file, " isn't recognized! Exiting script.")
-    
+        raise TypeError
 
     #create a list of title:value pairs from the metadata
     metadata = [["Protocol", protocol], ["Plate Name",plateName], ["Readout" ,  readout], ["Emission Filter" ,   emissionFilter], ["Integration Time" ,    integrationTime]]
@@ -94,27 +94,35 @@ concatFile = os.path.join(targetWorkspace, 'data-concat.csv') #location of the f
 
 if os.path.exists(concatFile): #if the concat file already exists, delete it.
     os.remove(concatFile)
-    print("output file already exists. deleting previous version")
+    print("Output file already exists. Deleting previous version...")
 
 paths = get_files(targetWorkspace) #list of path output from get_files
 
 #for each xlsx file in the paths list, do the following:
 for file in paths:
-    xlsxFile, metaData, fileType = importMetaData(file)   #import metadata into pandas dataframe
-  
+    name = os.path.basename(file)
+    print("\nStarting file:", name)
+    
+    try: #try the import process, and filter out any unknown protocol types
+        xlsxFile, metaData, fileType = importMetaData(file)   #import metadata into pandas dataframe
+    
+    except TypeError:
+        print("ERROR: Glo-MAX protocol not supported. Skipping file...")
+        continue
+
     csvDf= importCSV(file, fileType)                      #load the csv file columns into a dataframe
     
     
     if fileType == 'BRET':
-        donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
-        acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
+        donor = extract_data(csvDf, 'Donor RLU')        #extract and re-shuffle the donor data
+        acceptor = extract_data(csvDf, 'Acceptor RLU')  #extract and re-shuffle the acceptor data
         ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
         list_of_dfs = [ratio, donor, acceptor]          #list of dataframes to concatenate
-    
+        
     else:
         donor = extract_data(csvDf, 'RLU')        #extract and re-shuffle the donor data
         list_of_dfs = [donor] #just concatenate donor
-        
+    
     #write the donor, accepetor and ratio to an excel file
     with open(concatFile,'a') as f:
         metaData.to_csv(f, index=False, header=False, line_terminator='\n')
