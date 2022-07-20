@@ -14,15 +14,20 @@ I've written a short tutorial document on how to get set up, but please note tha
 
 ## Set up VSCode (first time only) ##
 1.	Open the program.
-2.	Navigate to `File -> Preferences -> Settings` 
-3.	In the preferences, search for `“Terminal Integrated Default Profile: Windows”`
-4.	Select `“Command Prompt”`. This tells the program which shell to use when running scripts.
+2. Navigate to `Extensions` (the four block icon on the left-hand side of the window)
+3. Search for and install the `Python` package 
+
+![VSCode Terminal](https://github.com/anivarj/Promega/blob/main/extensions.png)
+
+5.	Navigate to `File -> Preferences -> Settings` 
+6.	In the preferences, search for `“Terminal Integrated Default Profile: Windows”`
+7.	Select `“Command Prompt”`. This tells the program which shell to use when running scripts.
 
 ![VSCode Terminal](https://github.com/anivarj/Promega/blob/main/VSCode-terminal.png)
 
-5.	Navigate to `View -> Command Palette`. 
-6.	Search for `“Python Select Interpreter”`.
-7.	Choose the Python version that has `('base')` next to it (it should be `Python 3.9.XX`). This tells the program where your python lives so it can call it to run things.
+7.	Navigate to `View -> Command Palette`. 
+8.	Search for `“Python Select Interpreter”`.
+9.	Choose the Python version that has `('base')` next to it (it should be `Python 3.9.XX`). This tells the program where your python lives so it can call it to run things.
 
 ![VSCode Interpreter](https://github.com/anivarj/Promega/blob/main/VSCode-interpreter.png)
 
@@ -30,9 +35,9 @@ I've written a short tutorial document on how to get set up, but please note tha
 ## Download my scripts ##
 You have two major options for accessing my materials. 
 1.  You can download a static "copy" file to your local computer
-2.  You can clone and sync the entire repository to your computer (this way, any changes I make will be pushed to you).
+2.  You can clone and sync the entire repository to your computer using GitHub Desktop (this way, any changes I make will be pushed to you).
 
-First-time users or those who don't need the latest and greatest will likely be fine just downloading a static copy, however if you would like help cloning and linking the repository, let me know and I'd be happy to help :)  
+First-time users or those who don't need the latest and greatest will likely be fine just downloading a static copy, however if you would like to stay up-to-date, let me know if you'd like help setting things up with GitHub Desktop (link above)! :)  
 
 To download a static copy, click on the green "Code" button and download the ZIP file.
 Open the ZIP file and move the folder to wherever you want on your computer (mine are in `Documents`).
