@@ -36,7 +36,6 @@ def get_files(targetWorkspace):
 #For a given xlsx file, parses metadata and stores it
 def importMetaData(file):
     metadata_xlsx = pd.read_excel(file, "Results") #load the file and read the results tab
-
     np_metadata = np.array(metadata_xlsx) #array from pandas dataframe
 
     protocol = np_metadata[0,3] #location of protocol field
@@ -110,7 +109,7 @@ for file in paths:
         donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
         acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
         ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
-        list_of_dfs = [donor, acceptor, ratio]          #list of dataframes to concatenate
+        list_of_dfs = [ratio, donor, acceptor]          #list of dataframes to concatenate
     
     else:
         donor = extract_data(csvDf, 'RLU')        #extract and re-shuffle the donor data
