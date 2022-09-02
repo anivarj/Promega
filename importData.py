@@ -13,6 +13,7 @@ DEPENDENCIES:
 
 #import packages needed
 from genericpath import exists
+from logging import raiseExceptions
 from operator import index
 import pandas as pd
 import numpy as np
@@ -33,6 +34,12 @@ def get_files(targetWorkspace):
             origPaths.append(os.path.join(dirpath, file))     #For each file, get the full path to it's location
     return(origPaths) #returns a list of full paths to all xlsx files.
 
+def cleanUp(*argv):
+    for arg in argv:
+        if os.path.exists(arg): #if the concat file already exists, delete it.
+            os.remove(arg)
+            print("Output file", arg, "already exists. Deleting previous version...")
+
 #For a given xlsx file, parses metadata and stores it
 def importMetaData(file):
     metadata_xlsx = pd.read_excel(file, "Results") #load the file and read the results tab
@@ -47,17 +54,22 @@ def importMetaData(file):
         fileType = 'BRET'
         acceptorFilter = np_metadata[7,3]
         integrationTime = np_metadata[8,3]
-    elif protocol == "Protocol: Nano-Glo":          #if the readout is luminescence, just get the integration time (no acceptor listed)
+    
+        #create a list of title:value pairs from the metadata
+        metadata = [["Protocol", protocol], ["Plate Name",plateName], ["Readout" ,  readout], ["Emission Filter" ,   emissionFilter], ["Acceptor Filter", acceptorFilter], ["Integration Time" ,    integrationTime]]
+        newDf = pd.DataFrame(metadata, columns = ["Category", "Value"]) #append the pairs to a dataframe
+    
+    elif protocol == "Protocol: Nano-Glo" or "CellTiter-Glo":   #if the readout is luminescence, just get the integration time (no acceptor listed)
         fileType = 'Luminescence'
         integrationTime = np_metadata[7,3]
-    else:
-        print("The protocol type for ", file, " isn't recognized! Exiting script.")
+        #create a list of title:value pairs from the metadata
+        metadata = [["Protocol", protocol], ["Plate Name",plateName], ["Readout" ,  readout], ["Emission Filter" ,   emissionFilter], ["Integration Time" ,    integrationTime]]
+
+        newDf = pd.DataFrame(metadata, columns = ["Category", "Value"]) #append the pairs to a dataframe
     
-
-    #create a list of title:value pairs from the metadata
-    metadata = [["Protocol", protocol], ["Plate Name",plateName], ["Readout" ,  readout], ["Emission Filter" ,   emissionFilter], ["Integration Time" ,    integrationTime]]
-
-    newDf = pd.DataFrame(metadata, columns = ["Category", "Value"]) #append the pairs to a dataframe
+    else:
+        raise TypeError
+    
     return(np_metadata, newDf, fileType) #return the dataframe and original metadata array (can probably eliminate np_metadata once comfortable with script functionability)
 
 #for a given xlsx file, finds the corresponding .csv and imports raw data
@@ -90,32 +102,42 @@ def extract_data(csvDf, signal):
 # Choose your raw data location
 targetWorkspace = askdirectory(title="SELECT YOUR DATA LOCATION")
 #targetWorkspace = r"D:\test-data\mixed" #for quick testing
-concatFile = os.path.join(targetWorkspace, 'data-concat.csv') #location of the final concatenated file
+bretOutputPath = os.path.join(targetWorkspace, 'BRET-concat.csv') #location of the final concatenated file
+donorOutputPath = os.path.join(targetWorkspace, 'donor-concat.csv') #separate file of concatenated donor (for protocols that only read luminescence)
 
-if os.path.exists(concatFile): #if the concat file already exists, delete it.
-    os.remove(concatFile)
-    print("output file already exists. deleting previous version")
+cleanUp(bretOutputPath, donorOutputPath) #remove any old versions of the concatenated files
 
 paths = get_files(targetWorkspace) #list of path output from get_files
 
 #for each xlsx file in the paths list, do the following:
 for file in paths:
-    xlsxFile, metaData, fileType = importMetaData(file)   #import metadata into pandas dataframe
-  
+    name = os.path.basename(file)
+    print("\nStarting file:", name)
+    
+    try: #try the import process, and filter out any unknown protocol types
+        xlsxFile, metaData, fileType = importMetaData(file)   #import metadata into pandas dataframe
+    
+    except TypeError:
+        print("ERROR: Glo-MAX protocol not supported. Skipping file...")
+        continue
+
     csvDf= importCSV(file, fileType)                      #load the csv file columns into a dataframe
     
     
     if fileType == 'BRET':
+        concatFile = bretOutputPath #data will be exported to the BRET concat file
         donor = extract_data(csvDf, 'Donor_RLU')        #extract and re-shuffle the donor data
         acceptor = extract_data(csvDf, 'Acceptor_RLU')  #extract and re-shuffle the acceptor data
         ratio = extract_data(csvDf, 'Ratio')            #extract and re-shuffle the ratio data
         list_of_dfs = [ratio, donor, acceptor]          #list of dataframes to concatenate
-    
-    else:
+        
+    elif fileType == "Luminescence":
+        concatFile = donorOutputPath #data will be exported to the donor concat file
         donor = extract_data(csvDf, 'RLU')        #extract and re-shuffle the donor data
         list_of_dfs = [donor] #just concatenate donor
-        
-    #write the donor, accepetor and ratio to an excel file
+    
+
+    #write the extracted data to the appropriate concatenated csv file (BRET or Donor)
     with open(concatFile,'a') as f:
         metaData.to_csv(f, index=False, header=False, line_terminator='\n')
         f.write('\n')
@@ -123,4 +145,13 @@ for file in paths:
             df.to_csv(f, index=False, line_terminator='\n')
         f.write('\n')
     f.close()
+
+
+
+
+
+
+
+
+
 
