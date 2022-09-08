@@ -33,11 +33,13 @@ def list_subfolders(targetWorkspace):
     return(subfolderList)
 
 #For each subfolder, get all of the .tif averages and make a stack
-def make_stacks(subfolder, baseName):    
+def make_stacks(subfolder, baseName):  
+    images = []  
     images = glob.glob(os.path.join(subfolder,baseName+"_T0*")) #find all images in the subfolder that match the pattern "_T0*"
     ic = skimage.io.ImageCollection(images, conserve_memory=False) #open the images as a collection
     stack = skimage.io.concatenate_images(ic) #concatenate the collection to a single stack
     return (stack)
+
     
 ##################################
 
@@ -56,9 +58,11 @@ for subfolder in subfolderList: #for each subfolder, find all the .tif files and
     print("Starting", baseName)
     stack = make_stacks(subfolder, baseName) #open the .tif files and make a stack
     
-    MAXdata = np.max(stack, axis=0) #make a maximum projection of the stack
+    #MAXdata = np.max(stack, axis=0) #make a maximum projection of the stack
+    AVGdata = np.round(np.mean(stack, axis=0)).astype('uint16') #makes average projection. 
     savePath = os.path.join(outputPath, baseName) #Sets the path for saving the stack. Inside "processed" under the same name as the original subfolder
-    tifffile.imwrite(savePath+"_max.tif", MAXdata) #saves the max projections with "_max" suffix
+    #tifffile.imwrite(savePath+"_max.tif", MAXdata) #saves the max projections with "_max" suffix
+    tifffile.imwrite(savePath+"_avg.tif", AVGdata) #saves average projection with "_avg" suffix
     #tifffile.imwrite(savePath+".tif", stack) #option for saving the unprojected stack
 
 print("Done with script!")
