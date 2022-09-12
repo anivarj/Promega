@@ -51,7 +51,6 @@ Open the ZIP file and move the folder to wherever you want on your computer (min
 
 4.	In the pop-up window, navigate to where your data is stored and click `select folder`.
 5.	The script will now automatically run. Any errors or messages will pop up in the terminal at the bottom of the VSCode window.
-6.	The output is called `data-concat.csv` and it is stored in the same location as your raw data.
 
 ## FAQ ##
 **Help! I'm lost and/or the script is not working!**
