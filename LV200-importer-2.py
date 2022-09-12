@@ -13,7 +13,6 @@ This script assumes data organization is as follows:
 
 import os
 from tkinter.filedialog import askdirectory
-import skimage
 import skimage.io
 import numpy as np
 import glob, os, shutil, tifffile
