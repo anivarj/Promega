@@ -74,8 +74,16 @@ def importMetaData(file):
 
 #for a given xlsx file, finds the corresponding .csv and imports raw data
 def importCSV(file, fileType):
-    csvFile = file.rsplit(".",1)[0] + ".csv"                                                        #take original file name and replace suffix with .csv
     
+    #initiate empty dataframe with full plate's-worth of columns and rows
+    emptyDf = pd.DataFrame({
+        'Row': sorted(['A','B','C','D','E','F','G','H']*12),
+        'Column' : ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']*8
+        })
+    
+    csvFile = file.rsplit(".",1)[0] + ".csv"  #Sets the name of the .csv file (original file name + .csv)
+
+    #read the csv files according to the assay type. 
     if fileType == 'Luminescence':
         csvDf = pd.read_csv(csvFile, usecols=['WellPosition', 'RLU']) 
     
@@ -84,6 +92,7 @@ def importCSV(file, fileType):
     
     csvDf[['Row', 'Column']] = csvDf['WellPosition'].str.split(':', expand=True)                    #split the WellPosition column into two parts
     csvDf['Column'] = csvDf['Column'].str.pad(width=2, side='left', fillchar= "0")                  #pad the well column numbers with 0s (01, 02...)
+    csvDf = pd.merge(emptyDf, csvDf, how="left") #merge the read csv file with the full plate emptyDf. Any missing values (from a partial plate read) remain as NaN.
     return(csvDf) #returns a dataframe with extracted data for all donor, acceptor and ratios
 
 #exctracts a single type of data (donor, acceptor or ratio) and reshuffles it to a classic plate layout
@@ -145,6 +154,8 @@ for file in paths:
             df.to_csv(f, index=False, line_terminator='\n')
         f.write('\n')
     f.close()
+
+    print("Done with script!")
 
 
 
