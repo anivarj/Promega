@@ -155,7 +155,7 @@ for file in paths:
         f.write('\n')
     f.close()
 
-    print("Done with script!")
+print("Done with script!")
 
 
 
