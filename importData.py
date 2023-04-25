@@ -148,10 +148,10 @@ for file in paths:
 
     #write the extracted data to the appropriate concatenated csv file (BRET or Donor)
     with open(concatFile,'a') as f:
-        metaData.to_csv(f, index=False, header=False, line_terminator='\n')
+        metaData.to_csv(f, index=False, header=False, lineterminator='\n')
         f.write('\n')
         for df in list_of_dfs:
-            df.to_csv(f, index=False, line_terminator='\n')
+            df.to_csv(f, index=False, lineterminator='\n')
         f.write('\n')
     f.close()
 
